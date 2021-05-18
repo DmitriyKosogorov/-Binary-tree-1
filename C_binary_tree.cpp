@@ -152,7 +152,7 @@ public:
 	}
 	void remove(int val)
 	{
-		TreeNode* elem=search(&root, val);
+		TreeNode* elem = search(&root, val);
 		if (elem == NULL)
 		{
 			return;
@@ -172,64 +172,78 @@ public:
 			}
 		}
 		else
-		if (elem->left != NULL && elem->right == NULL)
-		{
-			if (paren->value > elem->value)
+			if (elem->left != NULL && elem->right == NULL)
 			{
-				paren->left = elem->left;
-				elem->left->parent = paren;
-				//delete elem;
+				if (paren->value > elem->value)
+				{
+					paren->left = elem->left;
+					elem->left->parent = paren;
+					//delete elem;
+				}
+				else
+				{
+					paren->right = elem->left;
+					elem->left->parent = paren;
+					//delete elem;
+				}
 			}
 			else
-			{
-				paren->right = elem->left;
-				elem->left->parent = paren;
-				//delete elem;
-			}
-		}
-		else
-		if (elem->left == NULL && elem->right != NULL)
-		{
-			if (paren->value > elem->value)
-			{
-				paren->left = elem->right;
-				elem->right->parent = paren;
-				//delete elem;
-			}
-			else
-			{
-				paren->right = elem->right;
-				elem->right->parent = paren;
-				//delete elem;
-			}
-		}
-		else
-		{
-			TreeNode* next=elem->right;
-			while (next->left != NULL)
-				next = next->left;
-			if (paren->value > elem->value)
-			{
-				paren->left = next;
-				next->parent = paren;
-				next->left = elem->left;
-				next->right = elem->right;
-				//delete elem;
-			}
-		}
+				if (elem->left == NULL && elem->right != NULL)
+				{
+					if (paren->value > elem->value)
+					{
+						paren->left = elem->right;
+						elem->right->parent = paren;
+						//delete elem;
+					}
+					else
+					{
+						paren->right = elem->right;
+						elem->right->parent = paren;
+						//delete elem;
+					}
+				}
+				else
+				{
+					TreeNode* next = elem->right;
+					while (next->left != NULL)
+						next = next->left;
+					if (paren->value > elem->value)
+					{
+						TreeNode* saveleft = next->left;
+						TreeNode* saveright = next->right;
+						TreeNode* saveparent = next->parent;
+						paren->left = next;
+						next->parent = paren;
+						next->left = elem->left;
+						next->right = elem->right;
+						elem->left = saveleft;
+						elem->right = saveright;
+						elem->parent = saveparent;
+						if (saveparent->value > elem->value)
+							saveparent->left = elem;
+						else
+							saveparent->right = elem;
+						remove(elem->value);
+						//delete elem;
+					}
+				}
 	}
-	void print_elem(TreeNode* elem)
+	void print_elem(TreeNode* elem, int n,char c)
 	{
 		if (elem == NULL)
 			return;
-		cout << elem->value << endl;
-		print_elem(elem->left);
-		print_elem(elem->right);
+		n = n + 1;
+		print_elem(elem->right, n,'/');
+		for (int i = 0; i < n; i++)
+			cout << "\t";
+		cout <<c<< elem->value << endl;
+		print_elem(elem->left,n,'\\');
 
 	}
 	void print_tree()
 	{
-		print_elem(&root);
+		print_elem(&root,0,' ');
 	}
 };
 int main()
