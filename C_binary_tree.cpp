@@ -212,9 +212,15 @@ public:
 						next->parent = paren;
 						next->left = elem->left;
 						next->right = elem->right;
+						next->right->parent = next;
+						next->left->parent = next;
 						elem->left = saveleft;
 						elem->right = saveright;
 						elem->parent = saveparent;
+						if (saveleft != NULL)
+							saveleft->parent = elem;
+						if (saveright != NULL)
+							saveright->parent = elem;
 						if (saveparent->value > elem->value)
 							saveparent->left = elem;
 						else
@@ -291,9 +297,15 @@ public:
 						next->parent = paren;
 						next->left = elem->left;
 						next->right = elem->right;
+						next->right->parent = next;
+						next->left->parent = next;
 						elem->left = saveleft;
 						elem->right = saveright;
 						elem->parent = saveparent;
+						if(saveleft!=NULL)
+							saveleft->parent = elem;
+						if(saveright!=NULL)
+							saveright->parent = elem;
 						if (saveparent->value > elem->value)
 							saveparent->left = elem;
 						else
