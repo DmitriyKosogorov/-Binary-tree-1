@@ -76,16 +76,16 @@ public:
 	{
 		if (node != NULL)
 		{
-			if(node->left!=NULL)
+			if (node->left != NULL)
 				delete_tree(node->left);
-			if(node->right!=NULL)
-			delete_tree(node->right);
+			if (node->right != NULL)
+				delete_tree(node->right);
 			delete node;
 		}
 	}
 	~Tree()
 	{
-	//	delete_tree(&root);
+		//	delete_tree(&root);
 	}
 	TreeNode* get_root()
 	{
@@ -99,28 +99,28 @@ public:
 			return;
 		}
 		else
-		if (a->value > b->value)
-		{
-			if (a->left == NULL)
+			if (a->value > b->value)
 			{
-				a->left = b;
-				b->parent = a;
-				return;
+				if (a->left == NULL)
+				{
+					a->left = b;
+					b->parent = a;
+					return;
+				}
+				else
+					insert(a->left, b);
 			}
 			else
-				insert(a->left, b);
-		}
-		else
-		{
-			if (a->right == NULL)
 			{
-				a->right = b;
-				b->parent = a;
-				return;
+				if (a->right == NULL)
+				{
+					a->right = b;
+					b->parent = a;
+					return;
+				}
+				else
+					insert(a->right, b);
 			}
-			else
-				insert(a->right, b);
-		}
 	}
 	TreeNode* search(TreeNode* a, int b)
 	{
@@ -129,26 +129,100 @@ public:
 			return a;
 		}
 		else
-		if (a->value > b)
-		{
-			if (a->left == NULL)
+			if (a->value > b)
 			{
-				cout << "Search have no results" << endl;
-				return NULL;
+				if (a->left == NULL)
+				{
+					cout << "Search have no results" << endl;
+					return NULL;
+				}
+				else
+					search(a->left, b);
 			}
 			else
-				search(a->left, b);
+			{
+				if (a->right == NULL)
+				{
+					cout << "Search have no results" << endl;
+					return NULL;
+				}
+				else
+					search(a->right, b);
+			}
+	}
+	void remove(TreeNode* elem)
+	{
+		TreeNode* paren = elem->parent;
+		if (elem->left == NULL && elem->right == NULL)
+		{
+			if (paren->value > elem->value)
+			{
+				paren->left = NULL;
+				delete elem;
+			}
+			else
+			{
+				paren->right = NULL;
+				delete elem;
+			}
 		}
 		else
-		{
-			if (a->right == NULL)
+			if (elem->left != NULL && elem->right == NULL)
 			{
-				cout << "Search have no results" << endl;
-				return NULL;
+				if (paren->value > elem->value)
+				{
+					paren->left = elem->left;
+					elem->left->parent = paren;
+					//delete elem;
+				}
+				else
+				{
+					paren->right = elem->left;
+					elem->left->parent = paren;
+					//delete elem;
+				}
 			}
 			else
-				search(a->right, b);
-		}
+				if (elem->left == NULL && elem->right != NULL)
+				{
+					if (paren->value > elem->value)
+					{
+						paren->left = elem->right;
+						elem->right->parent = paren;
+						//delete elem;
+					}
+					else
+					{
+						paren->right = elem->right;
+						elem->right->parent = paren;
+						//delete elem;
+					}
+				}
+				else
+				{
+					TreeNode* next = elem->right;
+					while (next->left != NULL)
+						next = next->left;
+					if (paren->value > elem->value)
+					{
+						TreeNode* saveleft = next->left;
+						TreeNode* saveright = next->right;
+						TreeNode* saveparent = next->parent;
+						paren->left = next;
+						next->parent = paren;
+						next->left = elem->left;
+						next->right = elem->right;
+						elem->left = saveleft;
+						elem->right = saveright;
+						elem->parent = saveparent;
+						if (saveparent->value > elem->value)
+							saveparent->left = elem;
+						else
+							saveparent->right = elem;
+						remove(elem);
+						//delete elem;
+					}
+				}
 	}
 	void remove(int val)
 	{
@@ -224,7 +298,7 @@ public:
 							saveparent->left = elem;
 						else
 							saveparent->right = elem;
-						remove(elem->value);
+						remove(elem);
 						//delete elem;
 					}
 				}
